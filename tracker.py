@@ -11,28 +11,28 @@ TG_CHAT_ID = os.environ.get('TG_CHAT_ID')
 # 你可以在大括號 { } 裡面自由新增或修改想要追蹤的航線與日期
 ROUTES = [
     {
-        "name": "東京 (成田) - 12月行程",
+        "name": "北海道 - 10月行程",
         "departure": "HKG",
-        "arrival": "NRT",
-        "outbound_date": "2026-12-01",
-        "return_date": "2026-12-10",
-        "target_price": 3000
+        "arrival": "CTS",
+        "outbound_date": "2026-10-17",
+        "return_date": "2026-10-25",
+        "target_price": 4000
     },
     {
-        "name": "大阪 (關西) - 聖誕假期",
+        "name": "大阪 (關西) - 10月假期",
         "departure": "HKG",
         "arrival": "KIX",
-        "outbound_date": "2026-12-23",
-        "return_date": "2026-12-28",
-        "target_price": 3500
+        "outbound_date": "2026-10-17",
+        "return_date": "2026-10-25",
+        "target_price": 4000
     },
     {
-        "name": "台北 (桃園) - 跨年快閃",
+        "name": "仙台 - 10月快閃",
         "departure": "HKG",
-        "arrival": "TPE",
-        "outbound_date": "2026-12-30",
-        "return_date": "2027-01-02",
-        "target_price": 1800
+        "arrival": "SDJ",
+        "outbound_date": "2026-10-18",
+        "return_date": "2026-10-25",
+        "target_price": 4000
     }
 ]
 # ==========================================================
