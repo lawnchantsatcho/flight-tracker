@@ -31,7 +31,7 @@ for target in TARGETS:
     out_date = target["out_date"]
     ret_date = target["ret_date"]
 
-    url = f"https://serpapi.com/search.json?engine=google_flights&departure_id={dep}&arrival_id={arr}&outbound_date={out_date}&return_date={ret_date}&currency=HKD&hl=zh-tw&api_key={SERPAPI_KEY}"
+    url = f"https://serpapi.com/search.json?engine=google_flights&departure_id={dep}&arrival_id={arr}&outbound_date={out_date}&return_date={ret_date}&currency=HKD&hl=zh-tw&api_key={SERP_API_KEY}"
 
     try:
         res = requests.get(url).json()
