@@ -72,6 +72,8 @@ def check_flights():
         try:
             response = requests.get(url).json()
             best_flights = response.get('best_flights', [])
+
+flight_url = response.get('search_metadata', {}).get('google_flights_url', 'https://www.google.com/travel/flights')
             
             if not best_flights:
                 print(f"[{name}] 未查到相關航班資訊")
@@ -112,6 +114,7 @@ def check_flights():
                 f"今日價格：HKD ${current_price}\n"
                 f"前次價格：{prev_price_display}\n"
                 f"變動趨勢：{price_diff_str}"
+                f"🔗 查看購票平台與預訂：\n{flight_url}"
             )
             
             send_telegram(msg)
