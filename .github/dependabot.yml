@@ -1,0 +1,8 @@
+version: 2
+updates:
+  # 自動追蹤並更新 GitHub Actions 版本
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"  # 檢查頻率：weekly (每週)、daily (每天) 或 monthly (每月)
+      day: "monday"       # 指定喺每週一自動檢查
