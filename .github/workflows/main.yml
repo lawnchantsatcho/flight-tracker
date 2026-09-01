@@ -13,7 +13,7 @@ jobs:
       contents: write # 授權寫入權限以更新歷史數據
     steps:
       - name: 讀取專案程式
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 載入 Python
         uses: actions/setup-python@v7
