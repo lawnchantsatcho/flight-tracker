@@ -2,13 +2,15 @@ name: Automatic Flight Tracker
 
 on:
   schedule:
-    # 每天香港時間早上 08:00 自動執行 1 次 (UTC 00:00)
+    # 每天香港時間早上 08:00 自動執行 1 次
     - cron: '0 0 * * *'
-  workflow_dispatch: # 保留手動按鈕觸發功能
+  workflow_dispatch:
 
 jobs:
   track:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write # 授權寫入權限以更新歷史數據
     steps:
       - name: 讀取專案程式
         uses: actions/checkout@v3
@@ -27,3 +29,11 @@ jobs:
           TG_TOKEN: ${{ secrets.TG_TOKEN }}
           TG_CHAT_ID: ${{ secrets.TG_CHAT_ID }}
         run: python tracker.py
+
+      - name: 自動儲存並提交歷史價格檔
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add price_history.json || true
+          git commit -m "Update flight price history" || exit 0
+          git push
