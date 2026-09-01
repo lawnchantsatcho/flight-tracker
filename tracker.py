@@ -2,9 +2,9 @@ import os
 import requests
 import json
 
-SERPAPI_KEY = os.environ.get("SERPAPI_KEY")
-TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
-TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
+SERP_API_KEY = os.environ.get('SERP_API_KEY')
+TG_TOKEN = os.environ.get('TG_TOKEN')
+TG_CHAT_ID = os.environ.get('TG_CHAT_ID')
 
 # 讀取舊數據
 HISTORY_FILE = "price_history.json"
