@@ -2,9 +2,9 @@ name: Automatic Flight Tracker
 
 on:
   schedule:
-    # 每天香港時間 08:00 與 20:00 各自動執行一次
-    - cron: '0 0,12 * * *'
-  workflow_dispatch: # 允許手動點擊觸發測試
+    # 每天香港時間早上 08:00 自動執行 1 次 (UTC 00:00)
+    - cron: '0 0 * * *'
+  workflow_dispatch: # 保留手動按鈕觸發功能
 
 jobs:
   track:
