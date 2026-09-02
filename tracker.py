@@ -11,6 +11,9 @@ TG_CHAT_ID = os.environ.get('TG_CHAT_ID')
 HISTORY_FILE = "price_history.json"
 MODE_FILE = "tracking_mode.json"
 
+# 設定降價門檻：降價大於或等於此金額才觸發高頻追蹤
+DROP_THRESHOLD = 100 
+
 ROUTES = [
     {
         "name": "福岡 - 10月行程",
@@ -92,7 +95,7 @@ def check_flights():
         return
 
     now = datetime.now()
-    price_dropped = False
+    trigger_high_freq = False
 
     for route in ROUTES:
         name = route["name"]
@@ -137,6 +140,8 @@ def check_flights():
             prev_data = history.get(name, {})
             prev_price = prev_data.get("price", None)
 
+            price_dropped_enough = False
+
             if prev_price is None:
                 price_diff_str = "首次紀錄（無歷史數據）"
                 trend_symbol = "🆕"
@@ -144,7 +149,11 @@ def check_flights():
                 diff = prev_price - current_price
                 price_diff_str = f"降價 HKD ${diff} 📉"
                 trend_symbol = "🟢"
-                price_dropped = True  # 標記發生降價
+                
+                # 判斷降價是否達到門檻 (>= 100 蚊)
+                if diff >= DROP_THRESHOLD:
+                    price_dropped_enough = True
+                    trigger_high_freq = True  # 觸發開啟高頻追蹤
             elif current_price > prev_price:
                 diff = current_price - prev_price
                 price_diff_str = f"加價 HKD ${diff} 📈"
@@ -155,8 +164,8 @@ def check_flights():
 
             prev_price_display = f"HKD ${prev_price}" if prev_price is not None else "無歷史數據"
 
-            # 若觸發高頻模式，在通知中提醒用戶
-            high_freq_notice = "\n⚡ *已觸發高頻追蹤模式（未來 48 小時內每 3 小時檢查一次）*" if price_dropped else ""
+            # 若降價滿 $100，在 Telegram 訊息加入醒目標示
+            high_freq_notice = f"\n🚨 *顯著降價 (≥ HKD ${DROP_THRESHOLD})！已觸發高頻追蹤模式（未來 48 小時內每 3 小時檢查一次）*" if price_dropped_enough else ""
 
             msg = (
                 f"{trend_symbol} 【機票價格日報 - {name}】\n\n"
@@ -188,11 +197,11 @@ def check_flights():
 
     # 更新模式與最後執行時間
     mode_data["last_run"] = now.isoformat()
-    if price_dropped:
-        # 發生降價時，開啟高頻模式持續 48 小時
+    if trigger_high_freq:
+        # 降價超過 $100 時，開啟/延長高頻模式持續 48 小時
         high_freq_until = now + timedelta(hours=48)
         mode_data["high_freq_until"] = high_freq_until.isoformat()
-        print(f"🚨 偵測到降價！開啟高頻追蹤模式至 {high_freq_until.isoformat()}")
+        print(f"🚨 偵測到降價超過 HKD ${DROP_THRESHOLD}！開啟高頻追蹤模式至 {high_freq_until.isoformat()}")
 
     save_json(MODE_FILE, mode_data)
 
