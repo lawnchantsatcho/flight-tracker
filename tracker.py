@@ -13,18 +13,25 @@ HISTORY_FILE = "price_history.json"
 # ==================== 多組機票追蹤清單 ====================
 ROUTES = [
     {
-        "name": "東京 (成田) - 12月行程",
+        "name": "福岡 - 10月行程",
         "departure": "HKG",
-        "arrival": "NRT",
-        "outbound_date": "2026-12-01",
-        "return_date": "2026-12-10"
+        "arrival": "FUK",
+        "outbound_date": "2026-10-17",
+        "return_date": "2026-10-25"
     },
     {
         "name": "大阪 (關西) - 聖誕假期",
         "departure": "HKG",
         "arrival": "KIX",
-        "outbound_date": "2026-12-23",
-        "return_date": "2026-12-28"
+        "outbound_date": "2026-10-17",
+        "return_date": "2026-10-25"
+    },
+    {
+        "name": "仙台 - 10月假期",
+        "departure": "HKG",
+        "arrival": "SDJ",
+        "outbound_date": "2026-10-18",
+        "return_date": "2026-10-25"
     }
 ]
 # ==========================================================
