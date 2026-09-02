@@ -1,10 +1,18 @@
 {
-  "\u672d\u5e4c - 10\u6708\u884c\u7a0b": {
+  "札幌 - 10月行程": {
     "price": 4385,
     "airline": "JAL"
   },
-  "\u5927\u962a (\u95dc\u897f) - 10\u6708\u5047\u671f": {
+  "大阪 (關西) - 10月假期": {
     "price": 2858,
+    "airline": "Hong Kong Express"
+  },
+  "東京 (成田) - 12月行程": {
+    "price": 2586,
+    "airline": "Hong Kong Express"
+  },
+  "大阪 (關西) - 聖誕假期": {
+    "price": 4120,
     "airline": "Hong Kong Express"
   }
 }
