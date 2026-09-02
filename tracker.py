@@ -1,80 +1,96 @@
 import os
 import requests
-import json
+import time
 
+# 讀取保密設定
 SERP_API_KEY = os.environ.get('SERP_API_KEY')
 TG_TOKEN = os.environ.get('TG_TOKEN')
 TG_CHAT_ID = os.environ.get('TG_CHAT_ID')
 
-# 讀取舊數據
-HISTORY_FILE = "price_history.json"
-if os.path.exists(HISTORY_FILE):
-    with open(HISTORY_FILE, "r") as f:
-        history = json.load(f)
-else:
-    history = {}
-
-def send_telegram(msg):
-    url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": msg}
-    requests.post(url, json=payload)
-
-# 監控任務清單
-TARGETS = [
-    {"name": "北海道", "dep": "HKG", "arr": "CTS", "out_date": "2026-10-17", "ret_date": "2026-10-25"},
+# ==================== 多組機票追蹤清單 ====================
+# 你可以在大括號 { } 裡面自由新增或修改想要追蹤的航線與日期
+ROUTES = [
+    {
+        "name": "東京 (成田) - 12月行程",
+        "departure": "HKG",
+        "arrival": "NRT",
+        "outbound_date": "2026-12-01",
+        "return_date": "2026-12-10",
+        "target_price": 3000
+    },
+    {
+        "name": "大阪 (關西) - 聖誕假期",
+        "departure": "HKG",
+        "arrival": "KIX",
+        "outbound_date": "2026-12-23",
+        "return_date": "2026-12-28",
+        "target_price": 3500
+    },
+    {
+        "name": "台北 (桃園) - 跨年快閃",
+        "departure": "HKG",
+        "arrival": "TPE",
+        "outbound_date": "2026-12-30",
+        "return_date": "2027-01-02",
+        "target_price": 1800
+    }
 ]
+# ==========================================================
 
-for target in TARGETS:
-    name = target["name"]
-    dep = target["dep"]
-    arr = target["arr"]
-    out_date = target["out_date"]
-    ret_date = target["ret_date"]
-
-    url = f"https://serpapi.com/search.json?engine=google_flights&departure_id={dep}&arrival_id={arr}&outbound_date={out_date}&return_date={ret_date}&currency=HKD&hl=zh-tw&api_key={SERP_API_KEY}"
-
+def send_telegram(message):
+    url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
+    payload = {"chat_id": TG_CHAT_ID, "text": message}
     try:
-        res = requests.get(url).json()
-        best_flights = res.get('best_flights', [])
-        
-        # 1. 抓取 Google Flights 直達網址
-        flight_url = res.get('search_metadata', {}).get('google_flights_url', 'https://www.google.com/travel/flights')
-
-        if not best_flights:
-            continue
-
-        current_price = best_flights[0].get('price', 99999)
-        airline = best_flights[0].get('flights', [{}])[0].get('airline', '未知航空公司')
-
-        prev_price = history.get(name, {}).get("price")
-        
-        if prev_price is None:
-            trend = "🆕 首次紀錄"
-        elif current_price < prev_price:
-            trend = f"📉 降價 HKD ${prev_price - current_price}"
-        elif current_price > prev_price:
-            trend = f"📈 加價 HKD ${current_price - prev_price}"
-        else:
-            trend = "➖ 價格持平"
-
-        # 2. 組合 Telegram 通知（附帶購票連結）
-        msg = (
-            f"【機票價格通知 - {name}】\n\n"
-            f"✈️ 航空公司：{airline}\n"
-            f"📅 日期：{out_date} ~ {ret_date}\n"
-            f"💰 今日最低價：HKD ${current_price}\n"
-            f"📊 價格趨勢：{trend}\n\n"
-            f"🔗 查看購票平台與預訂：\n{flight_url}"
-        )
-
-        send_telegram(msg)
-
-        # 更新紀錄
-        history[name] = {"price": current_price}
-
+        requests.post(url, json=payload)
     except Exception as e:
-        print(f"Error processing {name}: {e}")
+        print(f"Telegram 推播失敗: {e}")
 
-# 儲存歷史紀錄
-with open(HISTORY_FILE, "w") as f:
-    json.dump(history, f, indent=2)
+def check_flights():
+    for route in ROUTES:
+        name = route["name"]
+        dep = route["departure"]
+        arr = route["arrival"]
+        out_date = route["outbound_date"]
+        ret_date = route["return_date"]
+        target = route["target_price"]
+
+        print(f"\n正在查詢：{name} ({dep} -> {arr}, {out_date} 至 {ret_date})...")
+
+        url = (
+            f"https://serpapi.com/search.json?engine=google_flights"
+            f"&departure_id={dep}&arrival_id={arr}"
+            f"&outbound_date={out_date}&return_date={ret_date}"
+            f"&currency=HKD&api_key={SERP_API_KEY}"
+        )
+        
+        try:
+            response = requests.get(url).json()
+            best_flights = response.get('best_flights', [])
+            
+            if not best_flights:
+                print(f"[{name}] 未查到相關航班資訊")
+                continue
+
+            lowest_price = best_flights[0].get('price', 99999)
+            airline = best_flights[0].get('flights', [{}])[0].get('airline', '未知航空公司')
+            
+            print(f"[{name}] 目前最低價格為：HKD ${lowest_price}")
+            
+            if lowest_price <= target:
+                msg = (
+                    f"✈️ 【平機票降價通知 - {name}】\n\n"
+                    f"航線：{dep} ➡️ {arr}\n"
+                    f"日期：{out_date} 至 {ret_date}\n"
+                    f"航空公司：{airline}\n"
+                    f"目前最低價：HKD ${lowest_price}\n"
+                    f"(已低於目標價 HKD ${target}！)"
+                )
+                send_telegram(msg)
+        except Exception as e:
+            print(f"[{name}] 查詢出錯: {e}")
+        
+        # 每次查詢間隔 2 秒，確保 API 呼叫穩定
+        time.sleep(2)
+
+if __name__ == "__main__":
+    check_flights()
