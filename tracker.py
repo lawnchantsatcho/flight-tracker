@@ -23,7 +23,7 @@ ROUTES = [
         "return_date": "2026-10-25"
     },
     {
-        "name": "大阪 (關西) - 聖誕假期",
+        "name": "大阪 (關西) - 10月假期",
         "departure": "HKG",
         "arrival": "KIX",
         "outbound_date": "2026-10-17",
@@ -34,6 +34,20 @@ ROUTES = [
         "departure": "HKG",
         "arrival": "SDJ",
         "outbound_date": "2026-10-18",
+        "return_date": "2026-10-25"
+    },
+    {
+        "name": "名古屋 - 10月假期",
+        "departure": "HKG",
+        "arrival": "NGO",
+        "outbound_date": "2026-10-17",
+        "return_date": "2026-10-25"
+    },
+    {
+        "name": "東京NRT - 10月假期",
+        "departure": "HKG",
+        "arrival": "NRT",
+        "outbound_date": "2026-10-17",
         "return_date": "2026-10-25"
     }
 ]
